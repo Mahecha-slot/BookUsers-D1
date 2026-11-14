@@ -15,7 +15,10 @@ public class VentanaCrearUsuario extends JFrame {
     private JTextField textField7; // Correo
     private JButton cancelarButton;
     private JButton guardarButton;
-    private JPanel panelCreaeUsuario;
+    private JTextField textField8;
+    private JTextField textField9;
+    private JComboBox comboBox1;
+    private JButton seleccionarFotografiaButton;
 
     private GestorUsuarios gestor;
 
@@ -61,17 +64,7 @@ public class VentanaCrearUsuario extends JFrame {
                 if (respuesta == JOptionPane.YES_OPTION) {
                     try {
                         // Capturamos los datos de las cajas de texto
-                        String dane = textField1.getText();
-                        String documento = textField2.getText();
-                        String nombres = textField3.getText();
-                        String apellidos = textField4.getText();
-                        String contrasena = textField5.getText();
-                        String telefono = textField6.getText();
-                        String correo = textField7.getText();
-                        String foto = "";
-
-                        // Creamos el objeto Usuarios con los 8 argumentos
-                        Usuarios nuevoUsuario = new Usuarios(dane, documento, nombres, apellidos, contrasena, telefono, correo, foto);
+                        Usuarios nuevoUsuario = getNuevoUsuario();
 
                         // Pasamos el objeto completo al gestor
                         gestor.agregarUsuario(nuevoUsuario);
@@ -100,5 +93,20 @@ public class VentanaCrearUsuario extends JFrame {
                 dispose();
             }
         });
+    }
+
+    private Usuarios getNuevoUsuario() {
+        String dane = textField1.getText();
+        String documento = textField2.getText();
+        String nombres = textField3.getText();
+        String apellidos = textField4.getText();
+        String contrasena = textField5.getText();
+        String telefono = textField6.getText();
+        String correo = textField7.getText();
+        String foto = "";
+
+        // Creamos el objeto Usuarios con los 8 argumentos
+        Usuarios nuevoUsuario = new Usuarios(dane, documento, nombres, apellidos, contrasena, telefono, correo, foto);
+        return nuevoUsuario;
     }
 }
