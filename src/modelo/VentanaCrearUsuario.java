@@ -1,14 +1,16 @@
 package modelo;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 public class VentanaCrearUsuario extends JFrame {
 
     private JPanel panelCrearUsuario;
 
-    private JTextField textField1; // Ya no se utiliza (antiguo DANE)
+    private JTextField textField1; // Antiguo DANE
     private JTextField textField2; // Número de documento
     private JTextField textField3; // Primer nombre
     private JTextField textField4; // Segundo nombre
@@ -23,10 +25,11 @@ public class VentanaCrearUsuario extends JFrame {
     private JButton cancelarButton;
     private JButton guardarButton;
     private JButton seleccionarFotografiaButton;
+    private JLabel labelFoto;
 
     private GestorUsuarios gestor;
 
-    // Variable para almacenar la ruta de la fotografía
+    // Almacena la ruta de la fotografía seleccionada
     private String rutaFoto = "";
 
     public VentanaCrearUsuario(GestorUsuarios gestor) {
@@ -63,8 +66,20 @@ public class VentanaCrearUsuario extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                // VALIDAR TODOS LOS CAMPOS OBLIGATORIOS
+                System.out.println("Tipo documento: " + comboBox1.getSelectedIndex());
+                System.out.println("Documento: " + textField2.getText());
+                System.out.println("Primer nombre: " + textField3.getText());
+                System.out.println("Segundo nombre: " + textField4.getText());
+                System.out.println("Contraseña: " + textField5.getText());
+                System.out.println("Teléfono: " + textField6.getText());
+                System.out.println("Correo: " + textField7.getText());
+                System.out.println("Primer apellido: " + textField8.getText());
+                System.out.println("Segundo apellido: " + textField9.getText());
+                System.out.println("Fotografía: " + rutaFoto);
+
+                // VALIDAR CAMPOS OBLIGATORIOS
                 if (comboBox1.getSelectedIndex() <= 0
+
                         || textField2.getText().trim().isEmpty()
                         || textField3.getText().trim().isEmpty()
                         || textField5.getText().trim().isEmpty()
@@ -145,13 +160,43 @@ public class VentanaCrearUsuario extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                JOptionPane.showMessageDialog(
-                        VentanaCrearUsuario.this,
-                        "La selección de fotografía se implementará en el siguiente paso.",
-                        "Fotografía pendiente",
-                        JOptionPane.INFORMATION_MESSAGE
+                // Crear explorador de archivos
+                JFileChooser selector = new JFileChooser();
+
+                selector.setDialogTitle(
+                        "Seleccionar fotografía del usuario"
                 );
 
+                // Permitir únicamente imágenes
+                FileNameExtensionFilter filtro =
+                        new FileNameExtensionFilter(
+                                "Imágenes (JPG, JPEG, PNG)",
+                                "jpg", "jpeg", "png"
+                        );
+
+                selector.setFileFilter(filtro);
+
+                // Abrir explorador
+                int resultado = selector.showOpenDialog(
+                        VentanaCrearUsuario.this
+                );
+
+                // Comprobar si seleccionó una imagen
+                if (resultado == JFileChooser.APPROVE_OPTION) {
+
+                    File archivo = selector.getSelectedFile();
+
+                    // Guardar la ruta de la fotografía
+                    rutaFoto = archivo.getAbsolutePath();
+
+                    JOptionPane.showMessageDialog(
+                            VentanaCrearUsuario.this,
+                            "Fotografía seleccionada correctamente.",
+                            "Fotografía seleccionada",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+
+                }
             }
         });
     }
