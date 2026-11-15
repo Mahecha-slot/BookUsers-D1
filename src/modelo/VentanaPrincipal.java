@@ -16,11 +16,19 @@ public class VentanaPrincipal extends JFrame {
 
     public VentanaPrincipal() {
 
-        // Configuración básica de la ventana
+        // Configuración de la ventana con el fondo
         setTitle("Sistema de Gestión de Usuarios - UNIPAZ");
-        setContentPane(PanelPrincipal);
+        PanelConFondo fondo = new PanelConFondo("/imagenes/Imagen1.jpg");
+
+        fondo.setLayout(new java.awt.BorderLayout());
+
+        PanelPrincipal.setOpaque(false);
+
+        fondo.add(PanelPrincipal, java.awt.BorderLayout.CENTER);
+
+        setContentPane(fondo);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(450, 350);
+        setSize(600, 600);
         setLocationRelativeTo(null);
 
         // --- ACCIÓN BOTÓN: "Ver usuarios" ---

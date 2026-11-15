@@ -5,53 +5,85 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class VentanaCrearUsuario extends JFrame {
+
     private JPanel panelCrearUsuario;
-    private JTextField textField1; // DANE
-    private JTextField textField2; // Documento
-    private JTextField textField3; // Nombres
-    private JTextField textField4; // Apellidos
+
+    private JTextField textField1; // Ya no se utiliza (antiguo DANE)
+    private JTextField textField2; // Número de documento
+    private JTextField textField3; // Primer nombre
+    private JTextField textField4; // Segundo nombre
     private JTextField textField5; // Contraseña
     private JTextField textField6; // Teléfono
     private JTextField textField7; // Correo
+    private JTextField textField8; // Primer apellido
+    private JTextField textField9; // Segundo apellido
+
+    private JComboBox comboBox1; // Tipo de documento
+
     private JButton cancelarButton;
     private JButton guardarButton;
-    private JTextField textField8;
-    private JTextField textField9;
-    private JComboBox comboBox1;
     private JButton seleccionarFotografiaButton;
 
     private GestorUsuarios gestor;
 
+    // Variable para almacenar la ruta de la fotografía
+    private String rutaFoto = "";
+
     public VentanaCrearUsuario(GestorUsuarios gestor) {
+
         this.gestor = gestor;
 
         setTitle("Crear Nuevo Usuario - UNIPAZ");
 
-        // Blindaje anti-nulos: Si el panel del form por alguna razón no se enlazó,
-        // creamos un panel por defecto para que la ventana abra sin crashear.
+        // Configuración del panel principal
         if (panelCrearUsuario == null) {
             panelCrearUsuario = new JPanel();
         }
+
         setContentPane(panelCrearUsuario);
 
-        setSize(500, 550);
+        setSize(600, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        // --- BOTÓN GUARDAR (Con confirmación Sí / No) ---
+        // CARGAR TIPOS DE DOCUMENTO
+        comboBox1.removeAllItems();
+
+        comboBox1.addItem("Seleccione tipo de documento");
+        comboBox1.addItem("Cédula de ciudadanía (CC)");
+        comboBox1.addItem("Tarjeta de identidad (TI)");
+        comboBox1.addItem("Cédula de extranjería (CE)");
+        comboBox1.addItem("Pasaporte (PA)");
+        comboBox1.addItem("Permiso por Protección Temporal (PPT)");
+        comboBox1.addItem("Registro civil (RC)");
+
+        // BOTÓN GUARDAR
         guardarButton.addActionListener(new ActionListener() {
+
             @Override
             public void actionPerformed(ActionEvent e) {
-                // 1. Validar campos obligatorios básicos
-                if (textField2.getText().isEmpty() || textField3.getText().isEmpty() || textField4.getText().isEmpty()) {
-                    JOptionPane.showMessageDialog(VentanaCrearUsuario.this,
-                            "Por favor completa al menos el documento, nombres y apellidos.",
+
+                // VALIDAR TODOS LOS CAMPOS OBLIGATORIOS
+                if (comboBox1.getSelectedIndex() <= 0
+                        || textField2.getText().trim().isEmpty()
+                        || textField3.getText().trim().isEmpty()
+                        || textField5.getText().trim().isEmpty()
+                        || textField6.getText().trim().isEmpty()
+                        || textField7.getText().trim().isEmpty()
+                        || textField8.getText().trim().isEmpty()
+                        || rutaFoto.trim().isEmpty()) {
+
+                    JOptionPane.showMessageDialog(
+                            VentanaCrearUsuario.this,
+                            "Completa todos los datos, por favor",
                             "Campos incompletos",
-                            JOptionPane.WARNING_MESSAGE);
+                            JOptionPane.WARNING_MESSAGE
+                    );
+
                     return;
                 }
 
-                // 2. Cuadro de diálogo de confirmación Sí / No
+                // CONFIRMAR REGISTRO
                 int respuesta = JOptionPane.showConfirmDialog(
                         VentanaCrearUsuario.this,
                         "¿Estás seguro de que deseas registrar este usuario?",
@@ -60,53 +92,104 @@ public class VentanaCrearUsuario extends JFrame {
                         JOptionPane.QUESTION_MESSAGE
                 );
 
-                // 3. Si hace clic en "Sí"
                 if (respuesta == JOptionPane.YES_OPTION) {
+
                     try {
-                        // Capturamos los datos de las cajas de texto
+
+                        // Obtener datos del formulario
                         Usuarios nuevoUsuario = getNuevoUsuario();
 
-                        // Pasamos el objeto completo al gestor
+                        // Registrar usuario
                         gestor.agregarUsuario(nuevoUsuario);
 
-                        JOptionPane.showMessageDialog(VentanaCrearUsuario.this,
-                                "¡Usuario registrado con éxito!",
+                        JOptionPane.showMessageDialog(
+                                VentanaCrearUsuario.this,
+                                "¡Usuario registrado con éxito!\n"
+                                        + "ID: " + nuevoUsuario.getId()
+                                        + "\nUsername: " + nuevoUsuario.getUsername(),
                                 "Éxito",
-                                JOptionPane.INFORMATION_MESSAGE);
+                                JOptionPane.INFORMATION_MESSAGE
+                        );
 
-                        dispose(); // Cierra esta ventana
+                        // Cerrar ventana
+                        dispose();
 
                     } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(VentanaCrearUsuario.this,
-                                "Error al guardar el usuario: " + ex.getMessage(),
+
+                        JOptionPane.showMessageDialog(
+                                VentanaCrearUsuario.this,
+                                "Error al guardar el usuario: "
+                                        + ex.getMessage(),
                                 "Error",
-                                JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.ERROR_MESSAGE
+                        );
                     }
                 }
             }
         });
 
-        // --- BOTÓN CANCELAR ---
+        // BOTÓN CANCELAR
         cancelarButton.addActionListener(new ActionListener() {
+
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 dispose();
+
+            }
+        });
+
+        // BOTÓN SELECCIONAR FOTOGRAFÍA
+        seleccionarFotografiaButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                JOptionPane.showMessageDialog(
+                        VentanaCrearUsuario.this,
+                        "La selección de fotografía se implementará en el siguiente paso.",
+                        "Fotografía pendiente",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+
             }
         });
     }
 
+    // MÉTODO PARA CREAR EL OBJETO USUARIOS
     private Usuarios getNuevoUsuario() {
-        String dane = textField1.getText();
-        String documento = textField2.getText();
-        String nombres = textField3.getText();
-        String apellidos = textField4.getText();
-        String contrasena = textField5.getText();
-        String telefono = textField6.getText();
-        String correo = textField7.getText();
-        String foto = "";
 
-        // Creamos el objeto Usuarios con los 8 argumentos
-        Usuarios nuevoUsuario = new Usuarios(dane, documento, nombres, apellidos, contrasena, telefono, correo, foto);
+        String tipoDocumento =
+                comboBox1.getSelectedItem().toString();
+
+        String documento = textField2.getText().trim();
+
+        String primerNombre = textField3.getText().trim();
+        String segundoNombre = textField4.getText().trim();
+
+        String primerApellido = textField8.getText().trim();
+        String segundoApellido = textField9.getText().trim();
+
+        String contrasena = textField5.getText();
+        String telefono = textField6.getText().trim();
+        String correo = textField7.getText().trim();
+
+        String foto = rutaFoto;
+
+        // Crear usuario con los 10 argumentos
+        Usuarios nuevoUsuario = new Usuarios(
+                tipoDocumento,
+                documento,
+                primerNombre,
+                segundoNombre,
+                primerApellido,
+                segundoApellido,
+                contrasena,
+                telefono,
+                correo,
+                foto
+        );
+
         return nuevoUsuario;
     }
 }

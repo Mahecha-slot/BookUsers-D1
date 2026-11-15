@@ -2,54 +2,131 @@ package modelo;
 
 public class Usuarios {
 
-    // Contador estático para autoincrementar el ID con cada nuevo usuario registrado
+    // Contador automático para asignar el ID
     private static int contadorId = 1;
 
+    // Atributos del usuario
     private int id;
     private String dane;
     private String documento;
-    private String nombres;
-    private String apellidos;
+
+    private String primerNombre;
+    private String segundoNombre;
+
+    private String primerApellido;
+    private String segundoApellido;
+
     private String username;
     private String contrasena;
     private String telefono;
     private String correo;
     private String rutaFoto;
 
-    // Constructor único que recibe los 8 datos que le envía tu ventana
-    public Usuarios(String dane, String documento, String nombres, String apellidos,
-                    String contrasena, String telefono, String correo, String rutaFoto) {
-        this.id = contadorId++; // Asigna el ID actual y suma 1 para el siguiente
+    // Constructor
+    public Usuarios(String dane, String documento,
+                    String primerNombre, String segundoNombre,
+                    String primerApellido, String segundoApellido,
+                    String contrasena, String telefono,
+                    String correo, String rutaFoto) {
+
+        this.id = contadorId++;
+
         this.dane = dane;
         this.documento = documento;
-        this.nombres = nombres;
-        this.apellidos = apellidos;
+
+        this.primerNombre = primerNombre;
+        this.segundoNombre = segundoNombre;
+
+        this.primerApellido = primerApellido;
+        this.segundoApellido = segundoApellido;
+
         this.contrasena = contrasena;
         this.telefono = telefono;
         this.correo = correo;
         this.rutaFoto = rutaFoto;
 
-        // Generar username de forma automática usando el apellido y el nombre
-        this.username = generarUsername(apellidos, nombres);
+        // Generar username automáticamente
+        this.username = generarUsername(
+                primerApellido,
+                segundoApellido,
+                primerNombre
+        );
     }
 
-    // Lógica para generar el username de forma limpia
-    private String generarUsername(String apellido, String nombre) {
-        String apellidoLim = (apellido != null && !apellido.isEmpty()) ? apellido.toLowerCase().trim() : "x";
-        String nombreLim = (nombre != null && !nombre.isEmpty()) ? nombre.toLowerCase().trim() : "user";
+    // Método para generar el username
+    private String generarUsername(String primerApellido,
+                                   String segundoApellido,
+                                   String primerNombre) {
 
-        char letraApellido = apellidoLim.charAt(0);
-        return "" + letraApellido + nombreLim;
+        String apellido1 = primerApellido.trim();
+        String apellido2 = segundoApellido.trim();
+        String nombre = primerNombre.trim();
+
+        // Caso 1: Tiene dos apellidos
+        if (!apellido2.isEmpty()) {
+
+            return apellido1.substring(0, 1).toUpperCase()
+                    + apellido2.substring(0, 1).toUpperCase()
+                    + nombre;
+
+        } else {
+
+            // Caso 2: Solo tiene un apellido
+            if (apellido1.length() >= 2) {
+
+                return apellido1.substring(0, 2).toUpperCase()
+                        + nombre;
+
+            } else {
+
+                return apellido1.toUpperCase() + nombre;
+            }
+        }
     }
 
     // Getters
-    public int getId() { return id; }
-    public String getUsername() { return username; }
-    public String getDane() { return dane; }
-    public String getDocumento() { return documento; }
-    public String getNombres() { return nombres; }
-    public String getApellidos() { return apellidos; }
-    public String getTelefono() { return telefono; }
-    public String getCorreo() { return correo; }
-    public String getRutaFoto() { return rutaFoto; }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getDane() {
+        return dane;
+    }
+
+    public String getDocumento() {
+        return documento;
+    }
+
+    public String getPrimerNombre() {
+        return primerNombre;
+    }
+
+    public String getSegundoNombre() {
+        return segundoNombre;
+    }
+
+    public String getPrimerApellido() {
+        return primerApellido;
+    }
+
+    public String getSegundoApellido() {
+        return segundoApellido;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public String getCorreo() {
+        return correo;
+    }
+
+    public String getRutaFoto() {
+        return rutaFoto;
+    }
 }
