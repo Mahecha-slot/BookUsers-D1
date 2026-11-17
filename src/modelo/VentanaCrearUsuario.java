@@ -6,6 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+// NUEVO: imports para ajustar la imagen
+import java.awt.Image;
+
 public class VentanaCrearUsuario extends JFrame {
 
     private JPanel panelCrearUsuario;
@@ -38,12 +41,26 @@ public class VentanaCrearUsuario extends JFrame {
 
         setTitle("Crear Nuevo Usuario - UNIPAZ");
 
-        // Configuración del panel principal
+
+        // Fondo VentanaCrearUsuario
+
         if (panelCrearUsuario == null) {
             panelCrearUsuario = new JPanel();
         }
 
-        setContentPane(panelCrearUsuario);
+// La imagen
+        PanelConFondo fondo = new PanelConFondo("/imagenes/Imagen2.jpg");
+
+// Espacion de la Foto
+        fondo.setLayout(new java.awt.BorderLayout());
+
+        panelCrearUsuario.setOpaque(false);
+
+// Agregamos La informacion de el from
+        fondo.add(panelCrearUsuario, java.awt.BorderLayout.CENTER);
+
+// Establecer el fondo como contenido de la ventana
+        setContentPane(fondo);
 
         setSize(600, 600);
         setLocationRelativeTo(null);
@@ -188,6 +205,50 @@ public class VentanaCrearUsuario extends JFrame {
 
                     // Guardar la ruta de la fotografía
                     rutaFoto = archivo.getAbsolutePath();
+
+                    //  Cargar la fotografía seleccionada
+                    ImageIcon imagenOriginal = new ImageIcon(rutaFoto);
+
+                    //  Obtener el tamaño del JLabel
+                    int ancho = labelFoto.getWidth();
+                    int alto = labelFoto.getHeight();
+
+                    // Comprobar que el JLabel tenga dimensiones
+                    if (ancho <= 0 || alto <= 0) {
+                        ancho = 150;
+                        alto = 150;
+                    }
+
+                    // Calcular escala para conservar proporciones
+                    double escala = Math.min(
+                            (double) ancho / imagenOriginal.getIconWidth(),
+                            (double) alto / imagenOriginal.getIconHeight()
+                    );
+
+                    int nuevoAncho = (int) (
+                            imagenOriginal.getIconWidth() * escala
+                    );
+
+                    int nuevoAlto = (int) (
+                            imagenOriginal.getIconHeight() * escala
+                    );
+
+                    // Redimensionar la imagen
+                    Image imagen = imagenOriginal.getImage();
+
+                    Image imagenEscalada = imagen.getScaledInstance(
+                            nuevoAncho,
+                            nuevoAlto,
+                            Image.SCALE_SMOOTH
+                    );
+
+                    // Mostrar imagen en el JLabel
+                    labelFoto.setText("");
+                    labelFoto.setIcon(new ImageIcon(imagenEscalada));
+
+                    // Centrar la fotografía
+                    labelFoto.setHorizontalAlignment(SwingConstants.CENTER);
+                    labelFoto.setVerticalAlignment(SwingConstants.CENTER);
 
                     JOptionPane.showMessageDialog(
                             VentanaCrearUsuario.this,
