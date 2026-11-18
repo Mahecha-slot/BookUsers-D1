@@ -24,13 +24,24 @@ public class VentanaVerUsuarios extends JFrame {
 
         this.gestor = gestor;
 
+        // CONFIGURACIÓN DE LA VENTANA CON EL FONDO
         setTitle("Usuarios registrados - UNIPAZ");
 
-        setContentPane(PanelVerUsuario);
+        PanelConFondo fondo =
+                new PanelConFondo("/imagenes/Imagen4.jpeg");
+
+        fondo.setLayout(new BorderLayout());
+
+        // Hacer transparente el panel principal
+        PanelVerUsuario.setOpaque(false);
+
+        fondo.add(PanelVerUsuario, BorderLayout.CENTER);
+
+        setContentPane(fondo);
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        setSize(900, 650);
+        setSize(600, 600);
         setLocationRelativeTo(null);
 
         // Crear modelo de la lista
@@ -38,7 +49,7 @@ public class VentanaVerUsuarios extends JFrame {
 
         listaUsuarios = new JList<>(modeloLista);
 
-        // Personalizar cómo aparecen los usuarios
+        // PERSONALIZAR CÓMO APARECEN LOS USUARIOS
         listaUsuarios.setCellRenderer(
                 new DefaultListCellRenderer() {
 
@@ -72,6 +83,11 @@ public class VentanaVerUsuarios extends JFrame {
                         return this;
                     }
                 });
+
+        // TRANSPARENCIA DEL ÁREA DE USUARIOS
+        ScrollVerUsuario.setOpaque(false);
+        ScrollVerUsuario.getViewport().setOpaque(false);
+        listaUsuarios.setOpaque(false);
 
         // Colocar la lista dentro del JScrollPane
         ScrollVerUsuario.setViewportView(listaUsuarios);
