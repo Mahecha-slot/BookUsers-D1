@@ -1,13 +1,16 @@
 package modelo;
 
+import java.text.Normalizer;
+
 public class Usuarios {
 
-    // Contador automático para asignar el ID
+    // Contador automático para asignar ID
     private static int contadorId = 1;
 
     // Atributos del usuario
     private int id;
-    private String dane;
+
+    private String tipoDocumento;
     private String documento;
 
     private String primerNombre;
@@ -23,7 +26,7 @@ public class Usuarios {
     private String rutaFoto;
 
     // Constructor
-    public Usuarios(String dane, String documento,
+    public Usuarios(String tipoDocumento, String documento,
                     String primerNombre, String segundoNombre,
                     String primerApellido, String segundoApellido,
                     String contrasena, String telefono,
@@ -31,7 +34,7 @@ public class Usuarios {
 
         this.id = contadorId++;
 
-        this.dane = dane;
+        this.tipoDocumento = tipoDocumento;
         this.documento = documento;
 
         this.primerNombre = primerNombre;
@@ -53,45 +56,58 @@ public class Usuarios {
         );
     }
 
-    // Método para generar el username
-    private String generarUsername(String primerApellido,
-                                   String segundoApellido,
-                                   String primerNombre) {
+    // Método para generar username
+    private String generarUsername(String apellido1,
+                                   String apellido2,
+                                   String nombre) {
 
-        String apellido1 = primerApellido.trim();
-        String apellido2 = segundoApellido.trim();
-        String nombre = primerNombre.trim();
+        String a1 = normalizar(apellido1);
+        String a2 = normalizar(apellido2);
+        String n = normalizar(nombre);
 
-        // Caso 1: Tiene dos apellidos
-        if (!apellido2.isEmpty()) {
+        String prefijo;
 
-            return apellido1.substring(0, 1).toUpperCase()
-                    + apellido2.substring(0, 1).toUpperCase()
-                    + nombre;
+        if (!a1.isEmpty() && !a2.isEmpty()) {
+
+            prefijo = a1.substring(0, 1)
+                    + a2.substring(0, 1);
+
+        } else if (!a1.isEmpty()) {
+
+            prefijo = a1.substring(
+                    0, Math.min(2, a1.length())
+            );
 
         } else {
 
-            // Caso 2: Solo tiene un apellido
-            if (apellido1.length() >= 2) {
-
-                return apellido1.substring(0, 2).toUpperCase()
-                        + nombre;
-
-            } else {
-
-                return apellido1.toUpperCase() + nombre;
-            }
+            prefijo = "u";
         }
+
+        return prefijo + n;
     }
 
-    // Getters
+    // Método para normalizar texto
+    private String normalizar(String texto) {
+
+        if (texto == null) {
+            return "";
+        }
+
+        return Normalizer.normalize(
+                        texto.trim().toLowerCase(),
+                        Normalizer.Form.NFD
+                ).replaceAll("\\p{M}", "")
+                .replaceAll("\\s+", "");
+    }
+
+    // GETTERS
 
     public int getId() {
         return id;
     }
 
-    public String getDane() {
-        return dane;
+    public String getTipoDocumento() {
+        return tipoDocumento;
     }
 
     public String getDocumento() {

@@ -5,15 +5,11 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-
-// NUEVO: imports para ajustar la imagen
 import java.awt.Image;
 
 public class VentanaCrearUsuario extends JFrame {
 
     private JPanel panelCrearUsuario;
-
-    private JTextField textField1; // Antiguo DANE
     private JTextField textField2; // Número de documento
     private JTextField textField3; // Primer nombre
     private JTextField textField4; // Segundo nombre
@@ -61,7 +57,6 @@ public class VentanaCrearUsuario extends JFrame {
 
 // Establecer el fondo como contenido de la ventana
         setContentPane(fondo);
-
         setSize(600, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

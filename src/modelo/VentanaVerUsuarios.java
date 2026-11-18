@@ -11,13 +11,18 @@ public class VentanaVerUsuarios extends JFrame {
     private JScrollPane ScrollVerUsuario;
     private JButton PDFButton;
 
+    // Gestor compartido
+    private GestorUsuarios gestor;
+
     // Lista visual de usuarios
     private JList<Usuarios> listaUsuarios;
 
-    // Modelo para organizar los usuarios
+    // Modelo de la lista
     private DefaultListModel<Usuarios> modeloLista;
 
     public VentanaVerUsuarios(GestorUsuarios gestor) {
+
+        this.gestor = gestor;
 
         setTitle("Usuarios registrados - UNIPAZ");
 
@@ -33,54 +38,60 @@ public class VentanaVerUsuarios extends JFrame {
 
         listaUsuarios = new JList<>(modeloLista);
 
-        // Mostrar nombres de los usuarios en lugar de sus objetos
-        listaUsuarios.setCellRenderer(new DefaultListCellRenderer() {
+        // Personalizar cómo aparecen los usuarios
+        listaUsuarios.setCellRenderer(
+                new DefaultListCellRenderer() {
 
-            @Override
-            public Component getListCellRendererComponent(
-                    JList<?> list,
-                    Object value,
-                    int index,
-                    boolean isSelected,
-                    boolean cellHasFocus) {
+                    @Override
+                    public Component getListCellRendererComponent(
+                            JList<?> list,
+                            Object value,
+                            int index,
+                            boolean isSelected,
+                            boolean cellHasFocus) {
 
-                super.getListCellRendererComponent(
-                        list, value, index, isSelected, cellHasFocus
-                );
+                        super.getListCellRendererComponent(
+                                list,
+                                value,
+                                index,
+                                isSelected,
+                                cellHasFocus
+                        );
 
-                if (value instanceof Usuarios) {
+                        if (value instanceof Usuarios) {
 
-                    Usuarios usuario = (Usuarios) value;
+                            Usuarios usuario = (Usuarios) value;
 
-                    setText(
-                            usuario.getPrimerNombre() + " " +
-                                    usuario.getPrimerApellido() + " - " +
-                                    usuario.getUsername()
-                    );
-                }
+                            setText(
+                                    usuario.getPrimerNombre() + " " +
+                                            usuario.getPrimerApellido() + " - " +
+                                            usuario.getUsername()
+                            );
+                        }
 
-                return this;
-            }
-        });
+                        return this;
+                    }
+                });
 
         // Colocar la lista dentro del JScrollPane
         ScrollVerUsuario.setViewportView(listaUsuarios);
 
-        // Cargar los usuarios registrados
+        // Cargar usuarios registrados
         cargarUsuarios();
 
-        // Seleccionar usuario desde el JComboBox
+        // Selección desde el JComboBox
         ListaSeccionUsuario.addActionListener(e -> {
 
             int indice = ListaSeccionUsuario.getSelectedIndex();
 
-            if (indice >= 0 && indice < modeloLista.size()) {
+            if (indice >= 0 &&
+                    indice < modeloLista.size()) {
 
                 listaUsuarios.setSelectedIndex(indice);
             }
         });
 
-        // Seleccionar usuario desde la lista
+        // Selección desde el JScrollPane
         listaUsuarios.addListSelectionListener(e -> {
 
             if (!e.getValueIsAdjusting()) {
@@ -95,7 +106,7 @@ public class VentanaVerUsuarios extends JFrame {
             }
         });
 
-        // Botón Descargar PDF
+        // BOTÓN DESCARGAR PDF
         PDFButton.addActionListener(e -> {
 
             Usuarios usuarioSeleccionado =
@@ -116,24 +127,24 @@ public class VentanaVerUsuarios extends JFrame {
                         this,
                         "Usuario seleccionado: " +
                                 usuarioSeleccionado.getUsername() +
-                                "\nLa generación del PDF se conectará en el siguiente paso."
+                                "\nLa generación del PDF se conectará próximamente."
                 );
             }
         });
     }
 
-    // Método para cargar los usuarios registrados
+    // MÉTODO PARA CARGAR LOS USUARIOS
     private void cargarUsuarios() {
 
         modeloLista.clear();
 
         ListaSeccionUsuario.removeAllItems();
 
-        // Obtener usuarios del gestor
+        // Obtener los usuarios del gestor compartido
         ArrayList<Usuarios> usuariosRegistrados =
-                GestorUsuarios.obtenerUsuarios();
+                gestor.obtenerUsuarios();
 
-        // Recorrer los usuarios registrados
+        // Recorrer los objetos registrados
         for (Usuarios usuario : usuariosRegistrados) {
 
             modeloLista.addElement(usuario);
