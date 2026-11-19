@@ -99,7 +99,7 @@ public class VentanaCrearUsuario extends JFrame {
                         || textField8.getText().trim().isEmpty()
                         || rutaFoto.trim().isEmpty()) {
 
-                    // NUEVA ADVERTENCIA PERSONALIZADA
+                    // ADVERTENCIA PERSONALIZADA
                     mostrarAdvertenciaDatos();
 
                     return;
@@ -125,16 +125,10 @@ public class VentanaCrearUsuario extends JFrame {
                         // Registrar usuario
                         gestor.agregarUsuario(nuevoUsuario);
 
-                        JOptionPane.showMessageDialog(
-                                VentanaCrearUsuario.this,
-                                "¡Usuario registrado con éxito!\n"
-                                        + "ID: " + nuevoUsuario.getId()
-                                        + "\nUsername: " + nuevoUsuario.getUsername(),
-                                "Éxito",
-                                JOptionPane.INFORMATION_MESSAGE
-                        );
+                        // MOSTRAR FELICITACIONES PERSONALIZADAS
+                        mostrarFelicidades();
 
-                        // Cerrar ventana
+                        // Cerrar formulario de creación
                         dispose();
 
                     } catch (Exception ex) {
@@ -256,24 +250,23 @@ public class VentanaCrearUsuario extends JFrame {
     }
 
     // ==================================================
-    // NUEVO MÉTODO: ADVERTENCIA PERSONALIZADA
+    // ADVERTENCIA PERSONALIZADA
     // ==================================================
 
     private void mostrarAdvertenciaDatos() {
 
         JFrame ventanaAdvertencia = new JFrame("Campos incompletos");
 
-        ventanaAdvertencia.setSize(300, 300);
+        ventanaAdvertencia.setSize(600, 600);
         ventanaAdvertencia.setLocationRelativeTo(this);
         ventanaAdvertencia.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         ventanaAdvertencia.setResizable(false);
 
-        // Cargar imagen personalizada
+        // Cargar imagen
         java.net.URL recurso = getClass().getResource(
                 "/imagenes/Advertencia.jpeg"
         );
 
-        // Comprobar que la imagen exista
         if (recurso == null) {
 
             JOptionPane.showMessageDialog(
@@ -288,44 +281,43 @@ public class VentanaCrearUsuario extends JFrame {
 
         ImageIcon imagenOriginal = new ImageIcon(recurso);
 
-        // imagen a 300 x 300
+        // Redimensionar imagen a 600 x 600
         Image imagenEscalada = imagenOriginal.getImage().getScaledInstance(
-                300,
-                300,
+                600,
+                600,
                 Image.SCALE_SMOOTH
         );
 
         ImageIcon imagenFondo = new ImageIcon(imagenEscalada);
 
-        // JLabel que contiene la imagen de fondo
         JLabel fondo = new JLabel(imagenFondo);
 
         fondo.setLayout(new java.awt.BorderLayout());
 
-        // Panel inferior para el mensaje y botón
+        // Panel inferior
         JPanel panelInferior = new JPanel();
 
         panelInferior.setLayout(new java.awt.BorderLayout());
         panelInferior.setOpaque(false);
 
-        // Mensaje personalizado
+        // Mensaje
         JLabel mensaje = new JLabel(
-                "Por favor llena tus da-tos",
+                "Por favor, llena tus datos",
                 SwingConstants.CENTER
         );
 
         mensaje.setFont(
-                new java.awt.Font("Arial", java.awt.Font.BOLD, 16)
+                new java.awt.Font("Arial", java.awt.Font.BOLD, 25)
         );
 
-        mensaje.setForeground(Color.BLACK);
+        mensaje.setForeground(java.awt.Color.WHITE);
 
         mensaje.setBorder(
                 BorderFactory.createEmptyBorder(10, 5, 10, 5)
         );
 
         // Botón entendido
-        JButton botonEntendido = new JButton("Meno");
+        JButton botonEntendido = new JButton("Entendido");
 
         botonEntendido.setFont(
                 new java.awt.Font("Arial", java.awt.Font.BOLD, 16)
@@ -341,13 +333,11 @@ public class VentanaCrearUsuario extends JFrame {
             }
         });
 
-        // Panel para centrar el botón
         JPanel panelBoton = new JPanel();
 
         panelBoton.setOpaque(false);
         panelBoton.add(botonEntendido);
 
-        // Agregar elementos
         panelInferior.add(mensaje, java.awt.BorderLayout.CENTER);
         panelInferior.add(panelBoton, java.awt.BorderLayout.SOUTH);
 
@@ -356,6 +346,105 @@ public class VentanaCrearUsuario extends JFrame {
         ventanaAdvertencia.setContentPane(fondo);
 
         ventanaAdvertencia.setVisible(true);
+    }
+
+    // ==================================================
+    // FELICITACIONES PERSONALIZADAS
+    // ==================================================
+
+    private void mostrarFelicidades() {
+
+        JFrame ventanaFelicidades = new JFrame("Registro exitoso");
+
+        ventanaFelicidades.setSize(600, 600);
+        ventanaFelicidades.setLocationRelativeTo(this);
+        ventanaFelicidades.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        ventanaFelicidades.setResizable(false);
+
+        // Cargar imagen
+        java.net.URL recurso = getClass().getResource(
+                "/imagenes/Felicidades.jpeg"
+        );
+
+        if (recurso == null) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No se encontró la imagen Felicidades.jpeg",
+                    "Error de imagen",
+                    JOptionPane.ERROR_MESSAGE
+            );
+
+            return;
+        }
+
+        ImageIcon imagenOriginal = new ImageIcon(recurso);
+
+        // Redimensionar imagen a 600 x 600
+        Image imagenEscalada = imagenOriginal.getImage().getScaledInstance(
+                600,
+                600,
+                Image.SCALE_SMOOTH
+        );
+
+        ImageIcon imagenFondo = new ImageIcon(imagenEscalada);
+
+        JLabel fondo = new JLabel(imagenFondo);
+
+        fondo.setLayout(new java.awt.BorderLayout());
+
+        // Panel inferior
+        JPanel panelInferior = new JPanel();
+
+        panelInferior.setLayout(new java.awt.BorderLayout());
+        panelInferior.setOpaque(false);
+
+        // Mensaje
+        JLabel mensaje = new JLabel(
+                "¡Usuario registrado con éxito!",
+                SwingConstants.CENTER
+        );
+
+        mensaje.setFont(
+                new java.awt.Font("Arial", java.awt.Font.BOLD, 23)
+        );
+
+        mensaje.setForeground(Color.black);
+
+        mensaje.setBorder(
+                BorderFactory.createEmptyBorder(10, 5, 10, 5)
+        );
+
+        // Botón entendido
+        JButton botonEntendido = new JButton("Entendido");
+
+        botonEntendido.setFont(
+                new java.awt.Font("Arial", java.awt.Font.BOLD, 16)
+        );
+
+        botonEntendido.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                ventanaFelicidades.dispose();
+
+            }
+        });
+
+        JPanel panelBoton = new JPanel();
+
+        panelBoton.setOpaque(false);
+        panelBoton.add(botonEntendido);
+
+        panelInferior.add(mensaje, java.awt.BorderLayout.CENTER);
+        panelInferior.add(panelBoton, java.awt.BorderLayout.SOUTH);
+
+        fondo.add(panelInferior, java.awt.BorderLayout.SOUTH);
+
+        ventanaFelicidades.setContentPane(fondo);
+
+        ventanaFelicidades.setVisible(true);
     }
 
     // ==================================================
