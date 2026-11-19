@@ -451,7 +451,7 @@ public class VentanaCrearUsuario extends JFrame {
     // MÉTODO PARA CREAR EL OBJETO USUARIOS
     // ==================================================
 
-    private Usuarios getNuevoUsuario() {
+    private Usuarios getNuevoUsuario() throws java.io.IOException {
 
         String tipoDocumento =
                 comboBox1.getSelectedItem().toString();
@@ -470,7 +470,6 @@ public class VentanaCrearUsuario extends JFrame {
 
         String foto = rutaFoto;
 
-        // Crear usuario con los 10 argumentos
         Usuarios nuevoUsuario = new Usuarios(
                 tipoDocumento,
                 documento,
