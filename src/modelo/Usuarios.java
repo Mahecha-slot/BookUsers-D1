@@ -10,47 +10,21 @@ public class Usuarios implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    // Contador automático
     private static int contadorId = 1;
 
-    // 1. ID
     private int id;
-
-    // 2. Tipo de documento
     private String tipoDocumento;
-
-    // 3. Documento
     private String documento;
-
-    // 4. Primer nombre
     private String primerNombre;
-
-    // 5. Segundo nombre
     private String segundoNombre;
-
-    // 6. Primer apellido
     private String primerApellido;
-
-    // 7. Segundo apellido
     private String segundoApellido;
-
-    // 8. Username
     private String username;
-
-    // 9. Teléfono
     private String telefono;
-
-    // 10. Contraseña
     private String contrasena;
-
-    // 11. Correo
     private String correo;
-
-    // 12. Fotografía
     private byte[] fotografia;
-
     private String rutaFoto;
-
 
     // CONSTRUCTOR
     public Usuarios(
@@ -84,14 +58,12 @@ public class Usuarios implements Serializable {
         this.telefono = telefono;
         this.contrasena = contrasena;
         this.correo = correo;
-
         this.rutaFoto = rutaFoto;
 
         this.fotografia = Files.readAllBytes(
                 Paths.get(rutaFoto)
         );
     }
-
 
     // GENERAR USERNAME
     private String generarUsername(
@@ -107,21 +79,23 @@ public class Usuarios implements Serializable {
         String prefijo;
 
         if (!a1.isEmpty() && !a2.isEmpty()) {
+
             prefijo = a1.substring(0, 1)
                     + a2.substring(0, 1);
 
         } else if (!a1.isEmpty()) {
+
             prefijo = a1.substring(
                     0, Math.min(2, a1.length())
             );
 
         } else {
+
             prefijo = "u";
         }
 
         return prefijo + n;
     }
-
 
     // NORMALIZAR TEXTO
     private String normalizar(String texto) {
@@ -137,12 +111,63 @@ public class Usuarios implements Serializable {
                 .replaceAll("\\s+", "");
     }
 
-
-    // ACTUALIZAR CONTADOR AL RECUPERAR USUARIOS
+    // ACTUALIZAR CONTADOR
     static void establecerContadorId(int siguienteId) {
         contadorId = siguienteId;
     }
 
+    // ACTUALIZAR DATOS DEL MISMO USUARIO
+    public void actualizarDatos(
+            String tipoDocumento,
+            String documento,
+            String primerNombre,
+            String segundoNombre,
+            String primerApellido,
+            String segundoApellido,
+            String contrasena,
+            String telefono,
+            String correo,
+            String nuevaRutaFoto
+    ) throws IOException {
+
+        // Leer primero la fotografía nueva, si se seleccionó
+        byte[] nuevaFotografia = this.fotografia;
+
+        if (nuevaRutaFoto != null
+                && !nuevaRutaFoto.trim().isEmpty()) {
+
+            nuevaFotografia = Files.readAllBytes(
+                    Paths.get(nuevaRutaFoto)
+            );
+        }
+
+        // Actualizar información
+        this.tipoDocumento = tipoDocumento;
+        this.documento = documento;
+        this.primerNombre = primerNombre;
+        this.segundoNombre = segundoNombre;
+        this.primerApellido = primerApellido;
+        this.segundoApellido = segundoApellido;
+
+        this.contrasena = contrasena;
+        this.telefono = telefono;
+        this.correo = correo;
+
+        // Actualizar username automáticamente
+        this.username = generarUsername(
+                primerApellido,
+                segundoApellido,
+                primerNombre
+        );
+
+        // Actualizar fotografía únicamente si se seleccionó otra
+        if (nuevaRutaFoto != null
+                && !nuevaRutaFoto.trim().isEmpty()) {
+
+            this.rutaFoto = nuevaRutaFoto;
+            this.fotografia = nuevaFotografia;
+        }
+    }
 
     // GETTERS
 
@@ -195,6 +220,6 @@ public class Usuarios implements Serializable {
     }
 
     public byte[] getFotografia() {
-        return fotografia.clone();
+        return fotografia == null ? null : fotografia.clone();
     }
 }

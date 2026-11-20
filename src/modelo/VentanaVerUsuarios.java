@@ -21,6 +21,8 @@ public class VentanaVerUsuarios extends JFrame {
     private JPanel PanelVerUsuario;
     private JScrollPane ScrollVerUsuario;
     private JButton PDFButton;
+    private JButton eliminarButton;
+    private JButton editarButton;
 
     private GestorUsuarios gestor;
 
