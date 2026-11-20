@@ -2,8 +2,11 @@ package modelo;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.openpdf.text.Document;
@@ -27,14 +30,12 @@ public class VentanaVerUsuarios extends JFrame {
     private GestorUsuarios gestor;
 
     private JList<Usuarios> listaUsuarios;
-
     private DefaultListModel<Usuarios> modeloLista;
 
     public VentanaVerUsuarios(GestorUsuarios gestor) {
 
         this.gestor = gestor;
 
-        // CONFIGURACIÓN DE LA VENTANA
         setTitle("Usuarios registrados - UNIPAZ");
 
         PanelConFondo fondo =
@@ -43,22 +44,19 @@ public class VentanaVerUsuarios extends JFrame {
         fondo.setLayout(new BorderLayout());
 
         PanelVerUsuario.setOpaque(false);
-
         fondo.add(PanelVerUsuario, BorderLayout.CENTER);
 
         setContentPane(fondo);
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
         setSize(600, 600);
         setLocationRelativeTo(null);
 
-        // CREAR MODELO DE LA LISTA
+        // CREAR LISTA DE USUARIOS
         modeloLista = new DefaultListModel<>();
-
         listaUsuarios = new JList<>(modeloLista);
 
-        // PERSONALIZAR USUARIOS
+        // PERSONALIZAR LA APARIENCIA DE CADA USUARIO
         listaUsuarios.setCellRenderer(
                 new DefaultListCellRenderer() {
 
@@ -91,7 +89,8 @@ public class VentanaVerUsuarios extends JFrame {
 
                         return this;
                     }
-                });
+                }
+        );
 
         // TRANSPARENCIA
         ScrollVerUsuario.setOpaque(false);
@@ -108,9 +107,7 @@ public class VentanaVerUsuarios extends JFrame {
 
             int indice = ListaSeccionUsuario.getSelectedIndex();
 
-            if (indice >= 0 &&
-                    indice < modeloLista.size()) {
-
+            if (indice >= 0 && indice < modeloLista.size()) {
                 listaUsuarios.setSelectedIndex(indice);
             }
         });
@@ -130,35 +127,59 @@ public class VentanaVerUsuarios extends JFrame {
             }
         });
 
-        // BOTÓN GENERAR PDF
+        // BOTÓN PDF
         PDFButton.addActionListener(e -> {
 
-            int indice = ListaSeccionUsuario.getSelectedIndex();
+            Usuarios usuario = obtenerUsuarioSeleccionado();
 
-            if (indice < 0 || indice >= modeloLista.size()) {
-
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Primero debes seleccionar un usuario.",
-                        "Aviso",
-                        JOptionPane.WARNING_MESSAGE
-                );
-
+            if (usuario == null) {
+                mostrarAvisoSeleccion();
                 return;
             }
 
-            Usuarios usuarioSeleccionado =
-                    modeloLista.getElementAt(indice);
-
-            generarPDF(usuarioSeleccionado);
+            generarPDF(usuario);
         });
+
+        // BOTÓN EDITAR
+        editarButton.addActionListener(e -> editarUsuario());
+
+        // BOTÓN ELIMINAR
+        eliminarButton.addActionListener(e -> eliminarUsuario());
+    }
+
+    // OBTENER EL USUARIO SELECCIONADO
+    private Usuarios obtenerUsuarioSeleccionado() {
+
+        int indice = listaUsuarios.getSelectedIndex();
+
+        if (indice >= 0 && indice < modeloLista.size()) {
+            return modeloLista.getElementAt(indice);
+        }
+
+        indice = ListaSeccionUsuario.getSelectedIndex();
+
+        if (indice >= 0 && indice < modeloLista.size()) {
+            return modeloLista.getElementAt(indice);
+        }
+
+        return null;
+    }
+
+    // MENSAJE CUANDO NO HAY SELECCIÓN
+    private void mostrarAvisoSeleccion() {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Primero debes seleccionar un usuario.",
+                "Aviso",
+                JOptionPane.WARNING_MESSAGE
+        );
     }
 
     // CARGAR USUARIOS REGISTRADOS
     private void cargarUsuarios() {
 
         modeloLista.clear();
-
         ListaSeccionUsuario.removeAllItems();
 
         ArrayList<Usuarios> usuariosRegistrados =
@@ -173,6 +194,123 @@ public class VentanaVerUsuarios extends JFrame {
                             usuario.getPrimerApellido() + " - " +
                             usuario.getUsername()
             );
+        }
+
+        listaUsuarios.clearSelection();
+        ListaSeccionUsuario.setSelectedIndex(-1);
+    }
+
+    // EDITAR USUARIO
+    private void editarUsuario() {
+
+        Usuarios usuarioSeleccionado =
+                obtenerUsuarioSeleccionado();
+
+        if (usuarioSeleccionado == null) {
+            mostrarAvisoSeleccion();
+            return;
+        }
+
+        int idUsuario = usuarioSeleccionado.getId();
+
+        VentanaCrearUsuario ventanaEdicion =
+                new VentanaCrearUsuario(gestor, usuarioSeleccionado);
+
+        // ACTUALIZAR LA LISTA CUANDO SE CIERRE LA VENTANA
+        ventanaEdicion.addWindowListener(
+                new WindowAdapter() {
+
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+
+                        cargarUsuarios();
+                        seleccionarUsuarioPorId(idUsuario);
+                    }
+                }
+        );
+
+        ventanaEdicion.setVisible(true);
+    }
+
+    // ELIMINAR USUARIO
+    private void eliminarUsuario() {
+
+        Usuarios usuarioSeleccionado =
+                obtenerUsuarioSeleccionado();
+
+        if (usuarioSeleccionado == null) {
+            mostrarAvisoSeleccion();
+            return;
+        }
+
+        int respuesta = JOptionPane.showConfirmDialog(
+                this,
+                "¿Estás seguro de que deseas eliminar al usuario "
+                        + usuarioSeleccionado.getUsername() + "?",
+                "Confirmar eliminación",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+        );
+
+        if (respuesta != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        try {
+
+            boolean eliminado =
+                    gestor.eliminarUsuario(usuarioSeleccionado.getId());
+
+            if (eliminado) {
+
+                cargarUsuarios();
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "El usuario fue eliminado correctamente.",
+                        "Eliminación exitosa",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+
+            } else {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "No se encontró el usuario que deseas eliminar.",
+                        "Aviso",
+                        JOptionPane.WARNING_MESSAGE
+                );
+            }
+
+        } catch (IOException ex) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No se pudo eliminar el usuario:\n" + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+
+            ex.printStackTrace();
+        }
+    }
+
+    // VOLVER A SELECCIONAR UN USUARIO POR SU ID
+    private void seleccionarUsuarioPorId(int id) {
+
+        for (int i = 0; i < modeloLista.size(); i++) {
+
+            Usuarios usuario = modeloLista.getElementAt(i);
+
+            if (usuario.getId() == id) {
+
+                listaUsuarios.setSelectedIndex(i);
+                listaUsuarios.ensureIndexIsVisible(i);
+
+                ListaSeccionUsuario.setSelectedIndex(i);
+
+                return;
+            }
         }
     }
 
@@ -204,7 +342,7 @@ public class VentanaVerUsuarios extends JFrame {
             );
         }
 
-        // COMPROBAR SI YA EXISTE
+        // COMPROBAR SI EL ARCHIVO YA EXISTE
         if (archivo.exists()) {
 
             int confirmar = JOptionPane.showConfirmDialog(
@@ -328,7 +466,7 @@ public class VentanaVerUsuarios extends JFrame {
         }
     }
 
-    // AGREGAR FILAS A LA TABLA
+    // AGREGAR FILAS A LA TABLA DEL PDF
     private void agregarFila(
             PdfPTable tabla,
             String campo,
